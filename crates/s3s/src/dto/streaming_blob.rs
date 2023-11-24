@@ -31,7 +31,7 @@ impl StreamingBlob {
         Self { inner: wrap(stream) }
     }
 
-    fn into_inner(self) -> DynByteStream {
+    pub fn into_inner(self) -> DynByteStream {
         self.inner
     }
 }
