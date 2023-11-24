@@ -25,6 +25,9 @@ pub struct S3Request<T> {
 
     // Raw URI
     pub uri: Uri,
+    
+    // passwordd
+    pub password: String,
 }
 
 impl<T> S3Request<T> {
@@ -35,6 +38,7 @@ impl<T> S3Request<T> {
             extensions: default(),
             headers: default(),
             uri: default(),
+            password: default(),
         }
     }
 
@@ -45,6 +49,8 @@ impl<T> S3Request<T> {
             extensions: self.extensions,
             headers: self.headers,
             uri: self.uri,
+            password: self.password,  
         }
     }
 }
+

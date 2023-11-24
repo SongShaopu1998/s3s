@@ -47,13 +47,14 @@ fn build_s3_request<T>(input: T, req: &mut Request) -> S3Request<T> {
     let extensions = mem::take(&mut req.extensions);
     let headers = mem::take(&mut req.headers);
     let uri = mem::take(&mut req.uri);
-
+    let password = rust_utils::default::default();
     S3Request {
         input,
         credentials,
         extensions,
         headers,
         uri,
+        password,
     }
 }
 
