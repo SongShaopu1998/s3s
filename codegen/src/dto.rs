@@ -240,7 +240,9 @@ pub fn collect_rust_types(model: &smithy::Model, ops: &Operations) -> RustTypes 
 fn patch_types(space: &mut RustTypes) {
     // patch LifecycleExpiration
     {
-        let Some(rust::Type::Struct(ty)) = space.get_mut("LifecycleExpiration") else { panic!() };
+        let Some(rust::Type::Struct(ty)) = space.get_mut("LifecycleExpiration") else {
+            panic!()
+        };
         for field_name in ["days", "expired_object_delete_marker"] {
             let field = ty.fields.iter_mut().find(|x| x.name == field_name).unwrap();
             field.default_value = None;
@@ -250,7 +252,9 @@ fn patch_types(space: &mut RustTypes) {
 
     // patch SelectObjectContent input
     {
-        let Some(rust::Type::Struct(mut ty)) = space.remove("SelectObjectContentRequest") else { panic!() };
+        let Some(rust::Type::Struct(mut ty)) = space.remove("SelectObjectContentRequest") else {
+            panic!()
+        };
         let request = rust::Struct {
             name: ty.name.clone(),
             fields: ty.fields.iter().filter(|x| x.position == "xml").cloned().collect(),
@@ -299,7 +303,9 @@ fn unify_operation_types(ops: &Operations, space: &mut RustTypes) {
             }
         } else {
             assert!(op.smithy_input.ends_with("Request"));
-            let Some(rust::Type::Struct(mut ty)) = space.remove(&op.smithy_input) else { panic!() };
+            let Some(rust::Type::Struct(mut ty)) = space.remove(&op.smithy_input) else {
+                panic!()
+            };
             ty.name = op.input.clone(); // rename type
             ty
         };
@@ -320,7 +326,9 @@ fn unify_operation_types(ops: &Operations, space: &mut RustTypes) {
             if op.smithy_output == op.output {
                 continue;
             }
-            let rust::Type::Struct(mut ty) = space[&op.smithy_output].clone() else { panic!() };
+            let rust::Type::Struct(mut ty) = space[&op.smithy_output].clone() else {
+                panic!()
+            };
             ty.name = op.output.clone(); // duplicate type
             ty
         };
@@ -556,7 +564,9 @@ fn codegen_builders(rust_types: &RustTypes, ops: &Operations) {
     );
 
     for op in ops.values() {
-        let rust::Type::Struct(ty) = &rust_types[&op.input] else {continue};
+        let rust::Type::Struct(ty) = &rust_types[&op.input] else {
+            continue;
+        };
         codegen_struct_builder(ty, rust_types);
         g!();
     }

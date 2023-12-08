@@ -33,8 +33,12 @@ where
     T::Error: std::error::Error + Send + Sync + 'static,
 {
     let mut iter = req.headers.get_all(name).into_iter();
-    let Some(val) = iter.next() else { return Err(missing_header(name)) };
-    let None = iter.next() else { return Err(duplicate_header(name)) } ;
+    let Some(val) = iter.next() else {
+        return Err(missing_header(name));
+    };
+    let None = iter.next() else {
+        return Err(duplicate_header(name));
+    };
 
     T::try_from_header_value(val).map_err(|err| invalid_header(err, name, val))
 }
@@ -46,7 +50,9 @@ where
 {
     let mut iter = req.headers.get_all(name).into_iter();
     let Some(val) = iter.next() else { return Ok(None) };
-    let None = iter.next() else { return Err(duplicate_header(name)) } ;
+    let None = iter.next() else {
+        return Err(duplicate_header(name));
+    };
 
     match T::try_from_header_value(val) {
         Ok(ans) => Ok(Some(ans)),
@@ -57,7 +63,9 @@ where
 pub fn parse_opt_header_timestamp(req: &Request, name: &HeaderName, fmt: TimestampFormat) -> S3Result<Option<Timestamp>> {
     let mut iter = req.headers.get_all(name).into_iter();
     let Some(val) = iter.next() else { return Ok(None) };
-    let None = iter.next() else { return Err(duplicate_header(name)) } ;
+    let None = iter.next() else {
+        return Err(duplicate_header(name));
+    };
 
     let s = val.to_str().map_err(|err| invalid_header(err, name, val))?;
     match Timestamp::parse(fmt, s) {
@@ -98,11 +106,17 @@ pub fn parse_query<T: FromStr>(req: &Request, name: &str) -> S3Result<T>
 where
     T::Err: std::error::Error + Send + Sync + 'static,
 {
-    let Some(qs) = req.s3ext.qs.as_ref() else { return Err(missing_query(name)) };
+    let Some(qs) = req.s3ext.qs.as_ref() else {
+        return Err(missing_query(name));
+    };
 
     let mut iter = qs.get_all(name);
-    let Some(val) = iter.next() else { return Err(missing_query(name)) };
-    let None = iter.next() else { return Err(duplicate_query(name)) } ;
+    let Some(val) = iter.next() else {
+        return Err(missing_query(name));
+    };
+    let None = iter.next() else {
+        return Err(duplicate_query(name));
+    };
 
     val.parse::<T>().map_err(|err| invalid_query(err, name, val))
 }
@@ -115,7 +129,9 @@ where
 
     let mut iter = qs.get_all(name);
     let Some(val) = iter.next() else { return Ok(None) };
-    let None = iter.next() else { return Err(duplicate_query(name)) } ;
+    let None = iter.next() else {
+        return Err(duplicate_query(name));
+    };
 
     Ok(Some(val.parse::<T>().map_err(|err| invalid_query(err, name, val))?))
 }
@@ -125,20 +141,26 @@ pub fn parse_opt_query_timestamp(req: &Request, name: &str, fmt: TimestampFormat
 
     let mut iter = qs.get_all(name);
     let Some(val) = iter.next() else { return Ok(None) };
-    let None = iter.next() else { return Err(duplicate_query(name)) } ;
+    let None = iter.next() else {
+        return Err(duplicate_query(name));
+    };
 
     Ok(Some(Timestamp::parse(fmt, val).map_err(|err| invalid_query(err, name, val))?))
 }
 
 #[track_caller]
 pub fn unwrap_bucket(req: &mut Request) -> String {
-    let Some(S3Path::Bucket { bucket }) = req.s3ext.s3_path.take() else { panic!("s3 path not found") };
+    let Some(S3Path::Bucket { bucket }) = req.s3ext.s3_path.take() else {
+        panic!("s3 path not found")
+    };
     bucket.into()
 }
 
 #[track_caller]
 pub fn unwrap_object(req: &mut Request) -> (String, String) {
-    let Some(S3Path::Object { bucket, key }) = req.s3ext.s3_path.take() else { panic!("s3 path not found") };
+    let Some(S3Path::Object { bucket, key }) = req.s3ext.s3_path.take() else {
+        panic!("s3 path not found")
+    };
     (bucket.into(), key.into())
 }
 
@@ -205,13 +227,17 @@ pub fn parse_opt_metadata(req: &Request) -> S3Result<Option<Metadata>> {
     let mut metadata = Metadata::default();
     let map = &req.headers;
     for name in map.keys() {
-        let Some(key) = name.as_str().strip_prefix("x-amz-meta-") else { continue };
+        let Some(key) = name.as_str().strip_prefix("x-amz-meta-") else {
+            continue;
+        };
         if key.is_empty() {
             continue;
         }
         let mut iter = map.get_all(name).into_iter();
         let val = iter.next().unwrap();
-        let None = iter.next() else { return Err(duplicate_header(name)) };
+        let None = iter.next() else {
+            return Err(duplicate_header(name));
+        };
 
         let val = val.to_str().map_err(|err| invalid_header(err, name, val))?;
         metadata.insert(key.into(), val.into());
@@ -289,7 +315,9 @@ where
     T: FromStr,
     T::Err: std::error::Error + Send + Sync + 'static,
 {
-    let Some(val) = m.find_field_value(name) else { return Ok(None) };
+    let Some(val) = m.find_field_value(name) else {
+        return Ok(None);
+    };
     match val.parse() {
         Ok(ans) => Ok(Some(ans)),
         Err(source) => Err(s3_error!(source, InvalidArgument, "invalid field value: {}: {:?}", name, val)),
@@ -297,7 +325,9 @@ where
 }
 
 pub fn parse_field_value_timestamp(m: &Multipart, name: &str, fmt: TimestampFormat) -> S3Result<Option<Timestamp>> {
-    let Some(val) = m.find_field_value(name) else { return Ok(None) };
+    let Some(val) = m.find_field_value(name) else {
+        return Ok(None);
+    };
     match Timestamp::parse(fmt, val) {
         Ok(ans) => Ok(Some(ans)),
         Err(source) => Err(s3_error!(source, InvalidArgument, "invalid field value: {}: {:?}", name, val)),

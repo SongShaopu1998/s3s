@@ -213,7 +213,9 @@ fn codegen_xml_ser(ops: &Operations, rust_types: &RustTypes) {
     }
 
     for rust_type in root_type_names.iter().map(|&name| &rust_types[name]) {
-        let rust::Type::Struct(ty) = rust_type else { panic!("{rust_type:#?}") };
+        let rust::Type::Struct(ty) = rust_type else {
+            panic!("{rust_type:#?}")
+        };
 
         g!("impl Serialize for {} {{", ty.name);
         g!("fn serialize<W: Write>(&self, s: &mut Serializer<W>) -> SerResult {{");
@@ -413,7 +415,9 @@ fn codegen_xml_de(ops: &Operations, rust_types: &RustTypes) {
     }
 
     for (rust_type, xml_name) in root_type_names.iter().map(|(&name, xml_name)| (&rust_types[name], xml_name)) {
-        let rust::Type::Struct(ty) = rust_type else { panic!("{rust_type:#?}") };
+        let rust::Type::Struct(ty) = rust_type else {
+            panic!("{rust_type:#?}")
+        };
 
         g!("impl<'xml> Deserialize<'xml> for {} {{", ty.name);
         g!("fn deserialize(d: &mut Deserializer<'xml>) -> DeResult<Self> {{");

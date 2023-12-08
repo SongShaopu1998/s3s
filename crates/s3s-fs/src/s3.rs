@@ -382,7 +382,9 @@ impl S3 for FileSystem {
             ..
         } = input;
 
-        let Some(body) = body else { return Err(s3_error!(IncompleteBody)) };
+        let Some(body) = body else {
+            return Err(s3_error!(IncompleteBody));
+        };
 
         if key.ends_with('/') {
             if let Some(len) = content_length {
@@ -497,8 +499,12 @@ impl S3 for FileSystem {
             let file_name = entry.file_name();
             let Some(name) = file_name.to_str() else { continue };
 
-            let Some(part_segment) = name.strip_prefix(&prefix) else { continue };
-            let Some(part_number) = part_segment.strip_prefix(".part-") else { continue };
+            let Some(part_segment) = name.strip_prefix(&prefix) else {
+                continue;
+            };
+            let Some(part_number) = part_segment.strip_prefix(".part-") else {
+                continue;
+            };
             let part_number = part_number.parse::<i32>().unwrap();
 
             let file_meta = try_!(entry.metadata().await);
@@ -537,7 +543,9 @@ impl S3 for FileSystem {
             ..
         } = req.input;
 
-        let Some(multipart_upload) = multipart_upload else { return Err(s3_error!(InvalidPart)) };
+        let Some(multipart_upload) = multipart_upload else {
+            return Err(s3_error!(InvalidPart));
+        };
 
         let upload_id = Uuid::parse_str(&upload_id).map_err(|_| s3_error!(InvalidRequest))?;
         if self.verify_upload_id(req.credentials.as_ref(), &upload_id).await?.not() {

@@ -20,7 +20,9 @@ type Errors = BTreeMap<String, Error>;
 
 fn collect_errors(model: &smithy::Model) -> Errors {
     let error_code_doc = {
-        let smithy::Shape::Structure(shape) = &model.shapes["com.amazonaws.s3#Error"] else { panic!() };
+        let smithy::Shape::Structure(shape) = &model.shapes["com.amazonaws.s3#Error"] else {
+            panic!()
+        };
         shape.members["Code"].traits.doc().unwrap()
     };
 

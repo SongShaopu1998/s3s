@@ -114,7 +114,9 @@ pub const fn check_key(key: &str) -> bool {
 /// # Errors
 /// Returns an `Err` if the s3 path is invalid
 pub fn parse_path_style(uri_path: &str) -> Result<S3Path, ParseS3PathError> {
-    let Some(path) = uri_path.strip_prefix('/') else { return Err(ParseS3PathError::InvalidPath) };
+    let Some(path) = uri_path.strip_prefix('/') else {
+        return Err(ParseS3PathError::InvalidPath);
+    };
 
     if path.is_empty() {
         return Ok(S3Path::root());
@@ -147,7 +149,9 @@ pub fn parse_virtual_hosted_style<'a>(base_domain: &str, host: &'a str, uri_path
         return parse_path_style(uri_path);
     }
 
-    let Some(key) = uri_path.strip_prefix('/') else { return Err(ParseS3PathError::InvalidPath) };
+    let Some(key) = uri_path.strip_prefix('/') else {
+        return Err(ParseS3PathError::InvalidPath);
+    };
 
     let bucket = match host.strip_suffix(base_domain).and_then(|h| h.strip_suffix('.')) {
         Some(b) => b.to_owned(),

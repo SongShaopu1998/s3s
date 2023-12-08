@@ -23,7 +23,9 @@ use mime::Mime;
 use tracing::debug;
 
 fn extract_amz_content_sha256<'a>(hs: &'_ OrderedHeaders<'a>) -> S3Result<Option<AmzContentSha256<'a>>> {
-    let Some(val) = hs.get_unique(crate::header::X_AMZ_CONTENT_SHA256) else { return Ok(None) };
+    let Some(val) = hs.get_unique(crate::header::X_AMZ_CONTENT_SHA256) else {
+        return Ok(None);
+    };
     match AmzContentSha256::parse(val) {
         Ok(x) => Ok(Some(x)),
         Err(e) => {
@@ -36,7 +38,9 @@ fn extract_amz_content_sha256<'a>(hs: &'_ OrderedHeaders<'a>) -> S3Result<Option
 }
 
 fn extract_authorization_v4<'a>(hs: &'_ OrderedHeaders<'a>) -> S3Result<Option<AuthorizationV4<'a>>> {
-    let Some(val) = hs.get_unique(crate::header::AUTHORIZATION) else { return Ok(None) };
+    let Some(val) = hs.get_unique(crate::header::AUTHORIZATION) else {
+        return Ok(None);
+    };
     match AuthorizationV4::parse(val) {
         Ok(x) => Ok(Some(x)),
         Err(e) => Err(invalid_request!(e, "invalid header: authorization")),
@@ -44,7 +48,9 @@ fn extract_authorization_v4<'a>(hs: &'_ OrderedHeaders<'a>) -> S3Result<Option<A
 }
 
 fn extract_amz_date(hs: &'_ OrderedHeaders<'_>) -> S3Result<Option<AmzDate>> {
-    let Some(val) = hs.get_unique(crate::header::X_AMZ_DATE) else { return Ok(None) };
+    let Some(val) = hs.get_unique(crate::header::X_AMZ_DATE) else {
+        return Ok(None);
+    };
     match AmzDate::parse(val) {
         Ok(x) => Ok(Some(x)),
         Err(e) => Err(invalid_request!(e, "invalid header: x-amz-date")),

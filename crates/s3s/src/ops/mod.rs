@@ -71,7 +71,9 @@ fn unknown_operation() -> S3Error {
 }
 
 fn extract_host(req: &Request) -> S3Result<Option<String>> {
-    let Some(val) = req.headers.get(crate::header::HOST) else { return Ok(None) };
+    let Some(val) = req.headers.get(crate::header::HOST) else {
+        return Ok(None);
+    };
     let on_err = |e| s3_error!(e, InvalidRequest, "invalid header: Host: {val:?}");
     let host = val.to_str().map_err(on_err)?;
     Ok(Some(host.into()))
@@ -116,7 +118,9 @@ fn extract_headers(headers: &HeaderMap<HeaderValue>) -> S3Result<OrderedHeaders<
 }
 
 fn extract_mime(hs: &OrderedHeaders<'_>) -> S3Result<Option<Mime>> {
-    let Some(content_type) = hs.get_unique(crate::header::CONTENT_TYPE) else { return Ok(None) };
+    let Some(content_type) = hs.get_unique(crate::header::CONTENT_TYPE) else {
+        return Ok(None);
+    };
     match content_type.parse::<Mime>() {
         Ok(x) => Ok(Some(x)),
         Err(e) => Err(invalid_request!(e, "invalid content type")),
@@ -130,7 +134,9 @@ fn extract_content_length(req: &Request) -> Option<u64> {
 }
 
 fn extract_decoded_content_length(hs: &'_ OrderedHeaders<'_>) -> S3Result<Option<usize>> {
-    let Some(val) = hs.get_unique(crate::header::X_AMZ_DECODED_CONTENT_LENGTH) else { return Ok(None) };
+    let Some(val) = hs.get_unique(crate::header::X_AMZ_DECODED_CONTENT_LENGTH) else {
+        return Ok(None);
+    };
     match atoi::atoi::<usize>(val.as_bytes()) {
         Some(x) => Ok(Some(x)),
         None => Err(invalid_request!("invalid header: x-amz-decoded-content-length")),

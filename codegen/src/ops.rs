@@ -521,7 +521,9 @@ fn codegen_op_http_de_multipart(op: &Operation, rust_types: &RustTypes) {
         ""
     ];
 
-    let rust::Type::Struct(ty) = &rust_types[op.input.as_str()] else { panic!() };
+    let rust::Type::Struct(ty) = &rust_types[op.input.as_str()] else {
+        panic!()
+    };
 
     for field in &ty.fields {
         match field.position.as_str() {
@@ -671,7 +673,9 @@ impl PathPattern {
     }
 
     fn query_patterns(part: &str) -> Vec<(String, String)> {
-        let Some((_, q)) = part.split_once('?') else{ return Vec::new() };
+        let Some((_, q)) = part.split_once('?') else {
+            return Vec::new();
+        };
         let mut qs: Vec<(String, String)> = serde_urlencoded::from_str(q).unwrap();
         qs.retain(|(n, v)| n != "x-id" && v.is_empty().not());
         qs
@@ -766,7 +770,9 @@ fn needs_full_body(op: &Operation, rust_types: &RustTypes) -> bool {
         return false;
     }
 
-    let rust::Type::Struct(ty) = &rust_types[op.input.as_str()] else { panic!() };
+    let rust::Type::Struct(ty) = &rust_types[op.input.as_str()] else {
+        panic!()
+    };
     assert!(ty.xml_name.is_none());
 
     let has_xml_payload = ty.fields.iter().any(is_xml_payload);

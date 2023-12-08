@@ -42,10 +42,14 @@ pub fn codegen(ops: &Operations, rust_types: &RustTypes) {
             g!("let result = self.0.{method_name}().send().await;");
         } else {
             g!("let mut b = self.0.{method_name}();");
-            let rust::Type::Struct(ty) = &rust_types[op.input.as_str()] else { panic!() };
+            let rust::Type::Struct(ty) = &rust_types[op.input.as_str()] else {
+                panic!()
+            };
 
             let flattened_fields = if ty.name == "SelectObjectContentInput" {
-                let rust::Type::Struct(flattened_ty) = &rust_types["SelectObjectContentRequest"] else { panic!() };
+                let rust::Type::Struct(flattened_ty) = &rust_types["SelectObjectContentRequest"] else {
+                    panic!()
+                };
                 flattened_ty.fields.as_slice()
             } else {
                 &[]
